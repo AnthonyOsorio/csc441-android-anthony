@@ -3,3 +3,5 @@
 2. When toggling dark mode the background of the settings app, google, my own app, as well as screen hud bars changed to darker colors.
 
 3. One thing that I don't understand is why the files are organized the way that they currently are and how they correspond with one another.
+---
+1. The padding number was changed from 24 to 50. This alteration cause the text and picture to shift a little more towards the right of the screen.
