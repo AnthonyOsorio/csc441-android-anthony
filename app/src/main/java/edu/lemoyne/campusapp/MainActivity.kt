@@ -60,6 +60,8 @@ fun CounterDemo() {
 
 
     }
+
+
 }
 // --- Class 5: Step 6: my own greeting ---
 @Composable
@@ -91,6 +93,7 @@ fun HomeScreen(modifier: Modifier = Modifier){
             .padding(all = 50.dp)
 
     ) {
+        CounterDemo()
         // --- Lab 6 · Task 3: a picture of my own ---
         Image(
             painter = painterResource(id = R.drawable.header), contentDescription = "Profile Picture", contentScale = ContentScale.Crop,
@@ -121,19 +124,40 @@ fun HomeScreen(modifier: Modifier = Modifier){
             modifier = Modifier.fillMaxWidth()
         )
 
+
         //CLass 7: Step 4: the button changes the state ---
         Button(onClick = {
             traits.add(newTrail)
             newTrail = ""
 
-        }) {
+        })
+        {
             Text("Add file")
 
         }
+        // --- Lab 7 · Task 3: clear all ---
+
+        Button(onClick = {
+            traits.clear()
+        })
+        {
+            Text("Clear files")
+        }
+
+        // --- Lab 7 . Task 1: remove the last item ---
+        Button(onClick = {
+            if (traits.isNotEmpty()) {
+                traits.removeAt(traits.lastIndex)
+            }
+        }) {
+            Text("Remove last")
+        }
+
+
         Spacer(modifier = Modifier.height(8.dp))
 
 
-        )
+
 
        Text(
            text = "PNG",
@@ -159,9 +183,16 @@ fun HomeScreen(modifier: Modifier = Modifier){
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
 // --- Class 7: Step 2: draw whatever is in the list ---
+// --- Lab 7 · Task 2: singular and plural ---
 Text(
-    text = "${traits.size} traits",
+    text = if (traits.size == 1) "1 File" else "${traits.size} Files",
     fontWeight = FontWeight.Bold
+)
+// --- Lab 7 · Task 4: a live character counter ---
+Text(
+    text = "${newTrail.length} / 40",
+    fontSize = 12.sp,
+    color = MaterialTheme.colorScheme.onSurfaceVariant
 )
 
     for( trail in traits) {
@@ -171,6 +202,8 @@ Text(
 
     }
 }
+
+
 @Preview
 @Composable
 fun HomeScreenPreview() {
