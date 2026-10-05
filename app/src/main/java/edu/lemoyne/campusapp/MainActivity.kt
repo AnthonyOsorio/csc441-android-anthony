@@ -127,7 +127,7 @@ fun HomeScreen(modifier: Modifier = Modifier){
                 newTrail = it.take(MAX_NAME_LENGTH)
                 error = null
             },
-            label = { Text("Trail name") },
+            label = { Text("File name") },
             singleLine = true,
             isError = error != null,
             modifier = Modifier.fillMaxWidth()
@@ -251,12 +251,18 @@ fun HomeScreenDarkPreview() {
         }
 
 }
+// --- Lab 8 · Task 1: set min length value ---
+const val MIN_NAME_LENGTH = 3
 const val MAX_NAME_LENGTH = 30
 // --- Class 8: Step 1:one rule book for trail names ---
 fun validateFilelName(input: String, existingFiles: List<String>): String?{
     val name = input.trim()
     return when {
-        name.isEmpty() -> "Enter a trial name"
+        name.isEmpty() -> "Enter a file name"
+        // --- Lab 8 · Task 1: minimum length ---
+        name.length < 3 -> "Too short — at least 3 characters"
+        // --- Lab 8 · Task 2: my own rule ---
+        name.all { it.isDigit() } -> "A name can't be only numbers"
         name.length > MAX_NAME_LENGTH -> "Keep it to $MAX_NAME_LENGTH characters or fewer"
         existingFiles.any { it.equals( name, ignoreCase = true)} -> "$name is already on the list"
         else -> null
