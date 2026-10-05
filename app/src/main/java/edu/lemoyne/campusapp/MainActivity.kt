@@ -86,6 +86,8 @@ fun HomeScreen(modifier: Modifier = Modifier){
     val traits = remember { mutableStateListOf("PNG", "JPEG", "GIF", "PDF") }
     // --- Class 7: Step 3: what's typed lives in state ---
     var newTrail by remember {mutableStateOf("" )}
+    // --- Class 8: Step 2: the error message lives in state too ---
+    var error by remember {mutableStateOf<String?>(value = null)}
     // --- Class 6: Step 3: a column, so things stack ---
     Column(
         modifier = modifier
@@ -119,22 +121,49 @@ fun HomeScreen(modifier: Modifier = Modifier){
         Spacer(modifier = Modifier.height(24.dp))
         OutlinedTextField(
             value = newTrail,
-            onValueChange = {newTrail = it},
-            label = { Text("Trail name") },
+            // --- Class 8: Step 3: the filed itself pushes back ---
+
+            onValueChange = {
+                newTrail = it.take(MAX_NAME_LENGTH)
+                error = null
+            },
+            label = { Text("File name") },
+            singleLine = true,
+            isError = error != null,
             modifier = Modifier.fillMaxWidth()
         )
+        error?.let{ message ->
+
+            Text(
+                text = message,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                fontSize = 14.sp
+
+            )
+
+        }
 
 
         //CLass 7: Step 4: the button changes the state ---
         Button(onClick = {
-            traits.add(newTrail)
-            newTrail = ""
+            // --- Class 8: Step 3: check before you add ---
+            val problem = validateFilelName(input = newTrail, existingFiles = traits)
+            if (problem == null) {
+                traits.add(newTrail)
+                newTrail = ""
 
-        })
-        {
+            } else {
+                error = problem
+            }
+        },
+            // --- Class 8: Step 4: the sign on the door, not blank ---
+            enabled = newTrail.isNotBlank()
+            ){
             Text("Add file")
 
         }
+
+
         // --- Lab 7 · Task 3: clear all ---
 
         Button(onClick = {
@@ -159,29 +188,29 @@ fun HomeScreen(modifier: Modifier = Modifier){
 
 
 
-       Text(
-           text = "PNG",
-           fontSize = 18.sp
-       )
+        //Text(
+            //text = "PNG",
+           //fontSize = 18.sp
+       //)
         // --- Lab 6 · Task 1: Added 3 more lines ---
-        Text(
-            text = "JPEG",
-            fontSize = 18.sp
-        )
-        Text(
-            text = "GIF",
-            fontSize = 18.sp
-        )
-        Text(
-            text = "PDF",
-            fontSize = 18.sp
-        )
+        //Text(
+            //text = "JPEG",
+            //fontSize = 18.sp
+        //)
+        //Text(
+            //text = "GIF",
+            //fontSize = 18.sp
+        //)
+        //Text(
+            //text = "PDF",
+            //fontSize = 18.sp
+        //)
 // --- Lab 6 · Task 2: footer --- Spacer(modifier = Modifier.height(24.dp))
-        Text(
-            text = "Last updated September 2026",
-            fontSize = 12.sp,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
+        //Text(
+            //text = "Last updated September 2026",
+            //fontSize = 12.sp,
+            //color = MaterialTheme.colorScheme.onSurfaceVariant
+        //)
 // --- Class 7: Step 2: draw whatever is in the list ---
 // --- Lab 7 · Task 2: singular and plural ---
 Text(
@@ -222,3 +251,20 @@ fun HomeScreenDarkPreview() {
         }
 
 }
+// --- Lab 8 · Task 1: set min length value ---
+const val MIN_NAME_LENGTH = 3
+const val MAX_NAME_LENGTH = 30
+// --- Class 8: Step 1:one rule book for trail names ---
+fun validateFilelName(input: String, existingFiles: List<String>): String?{
+    val name = input.trim()
+    return when {
+        name.isEmpty() -> "Enter a file name"
+        // --- Lab 8 · Task 1: minimum length ---
+        name.length < 3 -> "Too short — at least 3 characters"
+        // --- Lab 8 · Task 2: my own rule ---
+        name.all { it.isDigit() } -> "A name can't be only numbers"
+        name.length > MAX_NAME_LENGTH -> "Keep it to $MAX_NAME_LENGTH characters or fewer"
+        existingFiles.any { it.equals( name, ignoreCase = true)} -> "$name is already on the list"
+        else -> null
+        }
+    }
