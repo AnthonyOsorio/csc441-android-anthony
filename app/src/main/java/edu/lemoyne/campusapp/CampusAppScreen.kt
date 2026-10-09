@@ -71,13 +71,16 @@ fun CampusAppScreen( modifier: Modifier = Modifier) {
             "home" ->  HomeScreen(
                 traits = traits,
                 onAddTrail = {traits.add(it)},
-                onSeeAll = { currentScreen = "list"}
+                onSeeAll = { currentScreen = "list"},
+                onAbout = { currentScreen = "about" }
             )
             "list" -> ListScreen(
                 traits = traits,
                 onBack = { currentScreen= "home"},
                 modifier = modifier
-
+            )
+            "about" -> AboutScreen(
+            onBack = { currentScreen = "home" }
             )
         }
     }
@@ -89,6 +92,7 @@ fun CampusAppScreen( modifier: Modifier = Modifier) {
 fun HomeScreen(traits: MutableList<String>,
                onAddTrail: (String) -> Unit,
                onSeeAll: () -> Unit,
+               onAbout: () -> Unit,
                modifier: Modifier = Modifier){
     // --- Class 7: Step 2: the list lives in space
     // --- Class 7: Step 3: what's typed lives in state ---
@@ -185,6 +189,11 @@ fun HomeScreen(traits: MutableList<String>,
         ) {
             Text("See all files")
         }
+        Button(
+            onClick = onAbout
+        ) {
+            Text("About")
+        }
         // --- Lab 7 . Task 1: remove the last item ---
 
 
@@ -249,7 +258,8 @@ fun HomeScreenPreview() {
                 "GIF",
                 "PDF"),
         onAddTrail = {},
-        onSeeAll = {})
+        onSeeAll = {},
+        onAbout = {})
     }
 }
 // --- Lab 6 · Task 4: dark mode preview ---
@@ -283,7 +293,7 @@ fun ListScreen(
             Text(text = "back")
         }
         Text(
-            text = "All trails",
+            text = "All Files",
             fontSize = 28.sp,
             fontWeight = FontWeight.Bold
 
@@ -295,9 +305,33 @@ fun ListScreen(
             Spacer(modifier = Modifier.height(8.dp))
 
             }
-
+// --- Lab 9 · Task 1: count on the list screen ---.
+        Text(
+            text = if (traits.size == 1) "1 File" else "${traits.size} Files",
+            fontWeight = FontWeight.Bold
+        )
             }
         }
+// --- Lab 9 · Task 2: a third screen ---
+@Composable
+fun AboutScreen(
+    onBack: () -> Unit,
+    modifier: Modifier = Modifier ){
+    BackHandler { onBack() }
+    Column(
+        modifier = modifier
+            .fillMaxWidth() .padding(24.dp)
+    ){
+        TextButton(onClick = onBack) {
+            Text("Back") }
+        Text(
+            text = "About",
+            fontSize = 28.sp,
+            fontWeight = FontWeight.Bold )
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(text = "File converting app, meant to convert image files.")
+        Text(text = "Built for CSC 441 by Anthony Osorio.") }
+}
 
 
 // --- Lab 8 · Task 1: set min length value ---

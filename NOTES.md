@@ -32,3 +32,5 @@ ___
 | #### | Add button greyed out | Yes |
 ___
 | oooo | Add button greyed out | Yes |
+___
+After rotating, I had still been on the list screen, but the files I had created on the main page had not popped up. As for the difference in currentScreen and Traits. currentScreen creates an observable state value that can change, while traits stores data within a modifiable list. 
