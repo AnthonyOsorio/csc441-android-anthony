@@ -2,12 +2,17 @@ package edu.lemoyne.campusapp
 import androidx.activity.compose.BackHandler
 import android.content.res.Configuration
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
@@ -20,6 +25,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.toMutableStateList
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -63,8 +70,9 @@ fun GreetingPreview() {
 @Composable
 fun CampusAppScreen( modifier: Modifier = Modifier) {
     val traits = remember {
-        mutableStateListOf("PNG", "JPEG", "GIF", "PDF")
+        mutableStateListOf("PNG", "JPEG", "GIF", "PDF", "WebP")
     }
+
         // --- Class 9: Step 4: Which screen is showing is just state ---
         var currentScreen by rememberSaveable { mutableStateOf( "home")}
         when(currentScreen){
@@ -77,6 +85,8 @@ fun CampusAppScreen( modifier: Modifier = Modifier) {
             "list" -> ListScreen(
                 traits = traits,
                 onBack = { currentScreen= "home"},
+                // --- Class 10 · Step 4: only the owner changes the list ---
+                onRemove = { traits.remove(it) },
                 modifier = modifier
             )
             "about" -> AboutScreen(
@@ -259,8 +269,17 @@ fun HomeScreenPreview() {
                 "PDF"),
         onAddTrail = {},
         onSeeAll = {},
-        onAbout = {})
+        onAbout = {},
+        )
     }
+}
+
+// --- Class 10 · Step 5: preview the empty case too --- @Preview(showBackground = true)
+@Composable
+fun ListScreenEmptyPreview() {
+    CampusAppTheme { ListScreen(
+        traits = emptyList(), onBack = {}, onRemove = {}
+    ) }
 }
 // --- Lab 6 · Task 4: dark mode preview ---
 
@@ -278,15 +297,18 @@ fun HomeScreenPreview() {
 fun ListScreen(
     traits: List<String>,
     onBack: () ->Unit,
+    onRemove: (String) -> Unit,
     modifier: Modifier = Modifier
 )
 {
+
+
     // --- Class 9: Step 6: the phone's back ---
     BackHandler {onBack() }
     Column(
             modifier = modifier
                 .fillMaxWidth()
-                .padding(24.dp)
+                .padding(horizontal = 24.dp)
 
             ) {
         TextButton(onClick = onBack) {
@@ -299,11 +321,42 @@ fun ListScreen(
 
         )
         Spacer(modifier = Modifier.height(16.dp))
-        for( trail in traits) {
-            Text(text= trail, fontSize = 18.sp)
 
-            Spacer(modifier = Modifier.height(8.dp))
+//        for( trail in traits) {
+//            Text(text= trail, fontSize = 18.sp)
+//
+//            Spacer(modifier = Modifier.height(8.dp))
 
+// --- Class 10 · Step 2: a list that scrolls ---
+// --- Class 10 · Step 5: the empty case ---
+        if (traits.isEmpty()) {
+            Text(
+                text = "No files yet. Add one on the home screen.",
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }else{
+        }
+     LazyColumn(
+         verticalArrangement = Arrangement.spacedBy(8.dp)
+     ) {
+         items(traits) { trail ->
+             FileRow(
+                 name = trail,
+                 onRemove = {
+                     onRemove(trail)
+                 }
+             )
+
+         }
+
+
+
+
+
+
+        items(traits) { trail ->
+            Text(text = trail, fontSize = 18.sp)
+         }
             }
 // --- Lab 9 · Task 1: count on the list screen ---.
         Text(
@@ -312,6 +365,22 @@ fun ListScreen(
         )
             }
         }
+// --- Class 10 · Step 3: one row, as its own Composable ---
+@Composable
+fun FileRow(name: String, onRemove:() -> Unit) {
+    // --- Class 10 · Step 4: a remove button on every row ---
+     TextButton(onClick = onRemove) {
+         Text("Remove")
+     }
+    Card(modifier = Modifier.fillMaxWidth()) { Row(
+        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically ){
+        Text(
+            text = name,
+            fontSize = 18.sp,
+            modifier = Modifier.weight(1f) )
+    } }
+}
 // --- Lab 9 · Task 2: a third screen ---
 @Composable
 fun AboutScreen(
@@ -355,15 +424,22 @@ fun validateFileName(input: String, existingFiles: List<String>): String?{
 @Preview( showBackground = true)
 @Composable
 fun ListScreenPreview() {
-    CampusAppTheme{
+    CampusAppTheme {
         ListScreen(
-            traits = listOf("PNG",
+            traits = listOf(
+                "PNG",
                 "JPEG",
                 "GIF",
-                "PDF"),
-            onBack = {}
-        )
-            }
+                "PDF"
+            ),
 
+            onBack = {},
+            onRemove = {}
+
+        )
 
     }
+
+
+
+}
