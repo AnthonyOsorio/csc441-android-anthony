@@ -87,6 +87,7 @@ fun CampusAppScreen( modifier: Modifier = Modifier) {
                 onBack = { currentScreen= "home"},
                 // --- Class 10 · Step 4: only the owner changes the list ---
                 onRemove = { traits.remove(it) },
+                onRemoveAll = {traits.clear()},
                 modifier = modifier
             )
             "about" -> AboutScreen(
@@ -278,7 +279,7 @@ fun HomeScreenPreview() {
 @Composable
 fun ListScreenEmptyPreview() {
     CampusAppTheme { ListScreen(
-        traits = emptyList(), onBack = {}, onRemove = {}
+        traits = emptyList(), onBack = {}, onRemove = {}, onRemoveAll = {}
     ) }
 }
 // --- Lab 6 · Task 4: dark mode preview ---
@@ -298,6 +299,7 @@ fun ListScreen(
     traits: List<String>,
     onBack: () ->Unit,
     onRemove: (String) -> Unit,
+    onRemoveAll: () -> Unit,
     modifier: Modifier = Modifier
 )
 {
@@ -332,9 +334,18 @@ fun ListScreen(
         if (traits.isEmpty()) {
             Text(
                 text = "No files yet. Add one on the home screen.",
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+                color = MaterialTheme.colorScheme.onSurfaceVariant)
+            // --- Lab 10 · Task 1: a way out of the empty screen ---
+            TextButton(onClick = onBack) {
+                Text(text = "Return to Homescreen")
+            }
         }else{
+            // --- Lab 10 · Task 2: remove all, through the owner ---
+            if (traits.isNotEmpty()) {
+            TextButton(onClick = onRemoveAll) { Text("Remove all")
+            }
+            }
+
         }
      LazyColumn(
          verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -434,7 +445,9 @@ fun ListScreenPreview() {
             ),
 
             onBack = {},
-            onRemove = {}
+            onRemove = {},
+            onRemoveAll = {}
+
 
         )
 
