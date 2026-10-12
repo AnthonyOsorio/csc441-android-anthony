@@ -1,6 +1,5 @@
 package edu.lemoyne.campusapp
 import androidx.activity.compose.BackHandler
-import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -15,7 +14,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -25,7 +23,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -69,7 +66,7 @@ fun GreetingPreview() {
 // --- Class 9: Step 2: one owner fot the data ---
 @Composable
 fun CampusAppScreen( modifier: Modifier = Modifier) {
-    val traits = remember {
+    val Files = remember {
         mutableStateListOf("PNG", "JPEG", "GIF", "PDF", "WebP")
     }
 
@@ -77,17 +74,17 @@ fun CampusAppScreen( modifier: Modifier = Modifier) {
         var currentScreen by rememberSaveable { mutableStateOf( "home")}
         when(currentScreen){
             "home" ->  HomeScreen(
-                traits = traits,
-                onAddTrail = {traits.add(it)},
+                Files = Files,
+                onAddTrail = {Files.add(it)},
                 onSeeAll = { currentScreen = "list"},
                 onAbout = { currentScreen = "about" }
             )
             "list" -> ListScreen(
-                traits = traits,
+                Files = Files,
                 onBack = { currentScreen= "home"},
                 // --- Class 10 · Step 4: only the owner changes the list ---
-                onRemove = { traits.remove(it) },
-                onRemoveAll = {traits.clear()},
+                onRemove = { Files.remove(it) },
+                onRemoveAll = {Files.clear()},
                 modifier = modifier
             )
             "about" -> AboutScreen(
@@ -100,14 +97,14 @@ fun CampusAppScreen( modifier: Modifier = Modifier) {
 
 // --- Class 6: Step 1: my own screen ---
 @Composable
-fun HomeScreen(traits: MutableList<String>,
+fun HomeScreen(Files: MutableList<String>,
                onAddTrail: (String) -> Unit,
                onSeeAll: () -> Unit,
                onAbout: () -> Unit,
                modifier: Modifier = Modifier){
     // --- Class 7: Step 2: the list lives in space
     // --- Class 7: Step 3: what's typed lives in state ---
-    var newTrail by remember {mutableStateOf("" )}
+    var newFile by remember {mutableStateOf("" )}
     // --- Class 8: Step 2: the error message lives in state too ---
     var error by remember {mutableStateOf<String?>(value = null)}
     // --- Class 6: Step 3: a column, so things stack ---
@@ -142,11 +139,11 @@ fun HomeScreen(traits: MutableList<String>,
         )
         Spacer(modifier = Modifier.height(24.dp))
         OutlinedTextField(
-            value = newTrail,
+            value = newFile,
             // --- Class 8: Step 3: the filed itself pushes back ---
 
             onValueChange = {
-                newTrail = it.take(MAX_NAME_LENGTH)
+                newFile = it.take(MAX_NAME_LENGTH)
                 error = null
             },
             label = { Text("File name") },
@@ -169,18 +166,18 @@ fun HomeScreen(traits: MutableList<String>,
         //CLass 7: Step 4: the button changes the state ---
         Button(onClick = {
             // --- Class 8: Step 3: check before you add ---
-            val problem = validateFileName(input = newTrail, existingFiles = traits)
+            val problem = validateFileName(input = newFile, existingFiles = Files)
             if (problem == null) {
                 // --- Class 9: Step 2: ask the owner to add it ---
-                onAddTrail(newTrail.trim())
-                newTrail = ""
+                onAddTrail(newFile.trim())
+                newFile = ""
 
             } else {
                 error = problem
             }
         },
             // --- Class 8: Step 4: the sign on the door, not blank ---
-            enabled = newTrail.isNotBlank()
+            enabled = newFile.isNotBlank()
         ){
             Text("Add file")
 
@@ -190,7 +187,7 @@ fun HomeScreen(traits: MutableList<String>,
         // --- Lab 7 · Task 3: clear all ---
 
         Button(onClick = {
-            traits.clear()
+            Files.clear()
         })
         {
             Text("Clear files")
@@ -240,17 +237,17 @@ fun HomeScreen(traits: MutableList<String>,
 // --- Class 7: Step 2: draw whatever is in the list ---
 // --- Lab 7 · Task 2: singular and plural ---
         Text(
-            text = if (traits.size == 1) "1 File" else "${traits.size} Files",
+            text = if (Files.size == 1) "1 File" else "${Files.size} Files",
             fontWeight = FontWeight.Bold
         )
 // --- Lab 7 · Task 4: a live character counter ---
         Text(
-            text = "${newTrail.length} / 40",
+            text = "${newFile.length} / 40",
             fontSize = 12.sp,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
 
-        for( trail in traits) {
+        for( trail in Files) {
             Text(text= trail, fontSize = 18.sp)
         }
 
@@ -264,7 +261,7 @@ fun HomeScreen(traits: MutableList<String>,
 fun HomeScreenPreview() {
     CampusAppTheme {
         HomeScreen(
-            traits = mutableListOf("PNG",
+            Files = mutableListOf("PNG",
                 "JPEG",
                 "GIF",
                 "PDF"),
@@ -279,7 +276,7 @@ fun HomeScreenPreview() {
 @Composable
 fun ListScreenEmptyPreview() {
     CampusAppTheme { ListScreen(
-        traits = emptyList(), onBack = {}, onRemove = {}, onRemoveAll = {}
+        Files = emptyList(), onBack = {}, onRemove = {}, onRemoveAll = {}
     ) }
 }
 // --- Lab 6 · Task 4: dark mode preview ---
@@ -296,7 +293,7 @@ fun ListScreenEmptyPreview() {
 // --- Class 9: Step 3: the second screen
 @Composable
 fun ListScreen(
-    traits: List<String>,
+    Files: List<String>,
     onBack: () ->Unit,
     onRemove: (String) -> Unit,
     onRemoveAll: () -> Unit,
@@ -331,7 +328,7 @@ fun ListScreen(
 
 // --- Class 10 · Step 2: a list that scrolls ---
 // --- Class 10 · Step 5: the empty case ---
-        if (traits.isEmpty()) {
+        if (Files.isEmpty()) {
             Text(
                 text = "No files yet. Add one on the home screen.",
                 color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -341,7 +338,7 @@ fun ListScreen(
             }
         }else{
             // --- Lab 10 · Task 2: remove all, through the owner ---
-            if (traits.isNotEmpty()) {
+            if (Files.isNotEmpty()) {
             TextButton(onClick = onRemoveAll) { Text("Remove all")
             }
             }
@@ -350,7 +347,7 @@ fun ListScreen(
      LazyColumn(
          verticalArrangement = Arrangement.spacedBy(8.dp)
      ) {
-         items(traits) { trail ->
+         items(Files) { trail ->
              FileRow(
                  name = trail,
                  onRemove = {
@@ -365,13 +362,13 @@ fun ListScreen(
 
 
 
-        items(traits) { trail ->
+        items(Files) { trail ->
             Text(text = trail, fontSize = 18.sp)
          }
             }
 // --- Lab 9 · Task 1: count on the list screen ---.
         Text(
-            text = if (traits.size == 1) "1 File" else "${traits.size} Files",
+            text = if (Files.size == 1) "1 File" else "${Files.size} Files",
             fontWeight = FontWeight.Bold
         )
             }
@@ -437,7 +434,7 @@ fun validateFileName(input: String, existingFiles: List<String>): String?{
 fun ListScreenPreview() {
     CampusAppTheme {
         ListScreen(
-            traits = listOf(
+            Files = listOf(
                 "PNG",
                 "JPEG",
                 "GIF",
