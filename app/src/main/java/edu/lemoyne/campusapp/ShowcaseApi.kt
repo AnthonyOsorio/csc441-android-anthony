@@ -1,16 +1,25 @@
 package edu.lemoyne.campusapp
 
+import com.google.gson.annotations.SerializedName
+import kotlinx.serialization.SerialName
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Header
 
 interface ShowcaseApi {
     @GET("/rest/v1/showcase_items")
     suspend fun getShowcaseItems(
-        @Header("apikey") apiKey: String
+        @Header("apikey") apiKey: String,
+        @Header("Authorization") authorization: String
 
     ):  List<ShowcaseItem>
+    @GET( "/auth/v1/toke?grant_type=password")
+    suspend fun signIn(
+        @Header( "apikey") apikey: String,
+        @Body request: LoginRequest
+    ): LoginResponse
 }
 object ShowcaseService {
     const val API_KEY = "sb_publishable_pTrU3YwcoavgozWuZSSq2w_kXJ7ToqX"
@@ -22,3 +31,9 @@ object ShowcaseService {
         .create(ShowcaseApi::class.java)
 
 }
+data class LoginRequest(
+    val email:String,
+    val password: String
+)
+data class LoginResponse(
+        @SerializedName( "access_token") val accessName: SerialName)
