@@ -90,6 +90,10 @@ fun CampusAppScreen( modifier: Modifier = Modifier) {
             "about" -> AboutScreen(
             onBack = { currentScreen = "home" }
             )
+            onInterestsClick = { currentScreen = "interests" },
+            "interests" -> InterestsScreen(
+                onBack = { currentScreen = "home" },
+                modifier = modifier )
         }
     }
 
@@ -101,6 +105,7 @@ fun HomeScreen(Files: MutableList<String>,
                onAddTrail: (String) -> Unit,
                onSeeAll: () -> Unit,
                onAbout: () -> Unit,
+               onInterestsClick: () -> Unit = {},
                modifier: Modifier = Modifier){
     // --- Class 7: Step 2: the list lives in space
     // --- Class 7: Step 3: what's typed lives in state ---
@@ -203,7 +208,9 @@ fun HomeScreen(Files: MutableList<String>,
             Text("About")
         }
         // --- Lab 7 . Task 1: remove the last item ---
+        Button(onClick = onInterestsClick)
 
+        { Text("My Interests") }
 
 
         Spacer(modifier = Modifier.height(8.dp))
