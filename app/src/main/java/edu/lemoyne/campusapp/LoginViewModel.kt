@@ -24,6 +24,13 @@ class LoginViewModel: ViewModel() {
                 _state.value = LoginUiState(loading = false)
                 onSuccess(token)
             } catch (error: Exception) {
+                android.util.Log.e("LOGIN", "Sign-in failed", error)
+
+                _state.value = LoginUiState(
+                    loading = false,
+                    failed = true
+                )
+
             }
         }
     }

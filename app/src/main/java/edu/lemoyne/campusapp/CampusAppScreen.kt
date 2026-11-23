@@ -65,7 +65,7 @@ fun GreetingPreview() {
 }
 // --- Class 9: Step 2: one owner fot the data ---
 @Composable
-fun CampusAppScreen( modifier: Modifier = Modifier) {
+fun CampusAppScreen( showcaseState: ShowcaseUiState,loginState: LoginUiState,onRefreshShowcase: () -> Unit,onLogin: (String, String, () -> Unit) -> Unit, modifier: Modifier = Modifier) {
     val Files = remember {
         mutableStateListOf("PNG", "JPEG", "GIF", "PDF", "WebP")
     }
@@ -77,7 +77,8 @@ fun CampusAppScreen( modifier: Modifier = Modifier) {
                 Files = Files,
                 onAddTrail = {Files.add(it)},
                 onSeeAll = { currentScreen = "list"},
-                onAbout = { currentScreen = "about" }
+                onAbout = { currentScreen = "about" },
+                onInterestsClick = { currentScreen = "login" }
             )
             "list" -> ListScreen(
                 Files = Files,
@@ -90,10 +91,22 @@ fun CampusAppScreen( modifier: Modifier = Modifier) {
             "about" -> AboutScreen(
             onBack = { currentScreen = "home" }
             )
-            onInterestsClick = { currentScreen = "interests" },
+
             "interests" -> InterestsScreen(
+                state = showcaseState,
+
+
                 onBack = { currentScreen = "home" },
-                modifier = modifier )
+                onRefresh = onRefreshShowcase,
+
+                modifier = modifier
+            )
+            "login" -> LoginScreen(
+                state = loginState,
+                onLogin = { email, password ->
+                    onLogin(email, password) { currentScreen = "interests" } },
+                modifier = modifier
+            )
         }
     }
 
