@@ -7,15 +7,16 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Header
+import retrofit2.http.POST
 
 interface ShowcaseApi {
-    @GET("/rest/v1/showcase_items")
+    @GET("rest/v1/showcase_items")
     suspend fun getShowcaseItems(
         @Header("apikey") apiKey: String,
         @Header("Authorization") authorization: String
 
     ):  List<ShowcaseItem>
-    @GET( "/auth/v1/toke?grant_type=password")
+    @POST( "auth/v1/token?grant_type=password")
     suspend fun signIn(
         @Header( "apikey") apikey: String,
         @Body request: LoginRequest
@@ -23,7 +24,7 @@ interface ShowcaseApi {
 }
 object ShowcaseService {
     const val API_KEY = "sb_publishable_pTrU3YwcoavgozWuZSSq2w_kXJ7ToqX"
-    const val BASE_URL = "https://xxfxfxymcmssyyjtxvqz.supabase.co"
+    const val BASE_URL = "https://xxfxfxymcmssyyjtxvqz.supabase.co/"
     val api: ShowcaseApi = Retrofit.Builder()
         .baseUrl(BASE_URL)
         .addConverterFactory(GsonConverterFactory.create())
@@ -36,4 +37,4 @@ data class LoginRequest(
     val password: String
 )
 data class LoginResponse(
-        @SerializedName( "access_token") val accessName: SerialName)
+        @SerializedName( "access_token") val accessToken: String)

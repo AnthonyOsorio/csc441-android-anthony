@@ -33,4 +33,17 @@ ___
 ___
 | oooo | Add button greyed out | Yes |
 ___
-After rotating, I had still been on the list screen, but the files I had created on the main page did not popped up. As for the difference in currentScreen and Traits. currentScreen creates an observable state value that can change, while traits stores data within a modifiable list. 
+After rotating, I had still been on the list screen, but the files I had created on the main page did not popped up. As for the difference in currentScreen and Traits. currentScreen creates an observable state value that can change, while traits stores data within a modifiable list.
+___
+Week 13, Wednesday: Lab 21
+1. What triggers refresh() when InterestsScreen first opens?
+ - LaunchedEffect(Unit) triggers onRefresh() when the screen first opens.
+
+2. What triggers refresh() when the button is tapped?
+ - The Refresh button has onClick = onRefresh, which calls refresh() when tapped.
+3. Why does InterestsScreen receive onRefresh instead of the ViewModel?
+ - The screen handles the user interface, while the ViewModel handles data and application logic. Passing onRefresh keeps the screen independent of the ViewModel.
+4. What is the difference between a successful [] response and a network failure?
+ - A successful [] response means the API request worked, but the database returned no records. A network failure means the request could not successfully reach or communicate with the API.
+5. How did you prove Android and the website use the same Supabase data? 
+ - By checking that both applications retrieve records from the same Supabase project and showcase_items table. The records displayed in Android and on the website can be compared by their titles, descriptions, and categories to verify that they match.

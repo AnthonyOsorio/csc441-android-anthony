@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 sealed class ShowcaseUiState {
@@ -17,28 +18,27 @@ class ShowcaseViewModel : ViewModel() {
 
     private val repository = ShowcaseRepository()
 
-    private val _uiState =
-        MutableStateFlow<ShowcaseUiState>(ShowcaseUiState.Loading)
 
-    val uiState: StateFlow<ShowcaseUiState> = _uiState
-    private ver accessToken: String? = null
+    private val _state = MutableStateFlow<ShowcaseUiState>(ShowcaseUiState.Loading)
+    val state = _state.asStateFlow()
+    //val uiState: StateFlow<ShowcaseUiState> = _uiState
+    private var accessToken: String? = null
 
     fun setAccessToken(token:String){
         accessToken = token
     }
 
     fun refresh() {
-        val token = accessToken ?: run {_uiState.value = ShowcaseUiState.Error("Please log in first")
+        val token = accessToken ?: run {_state.value = ShowcaseUiState.Error("Please log in first")
         }
         viewModelScope.launch {
-            _uiState.value = ShowcaseUiState.Loading
+            _state.value = ShowcaseUiState.Loading
 
             try {
                 val items = repository.loadItems(token as String)
-                _uiState.value = ShowcaseUiState.Success(items)
+                _state.value = ShowcaseUiState.Success(items)
             } catch (error: Exception) {
-                _uiState.value =
-                    ShowcaseUiState.Error(error.message ?: "Network error")
+                _state.value = ShowcaseUiState.Error(error.message ?: "Network error")
             }
         }
     }

@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -31,17 +32,34 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import edu.lemoyne.campusapp.ui.theme.CampusAppTheme
 
 class MainActivity : ComponentActivity() {
+    private val showcaseViewModel: ShowcaseViewModel by viewModels()
+    private val loginViewModel: LoginViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        showcaseViewModel.refresh()
         enableEdgeToEdge()
 
         setContent {
-            CampusAppTheme {
+            val showcaseState by showcaseViewModel.state.collectAsStateWithLifecycle()
+            val loginState by loginViewModel.state.collectAsStateWithLifecycle()
+            showcaseViewModel
+            CampusAppTheme{
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    CampusAppScreen(modifier = Modifier.padding(paddingValues = innerPadding   )
+                    CampusAppScreen(showcaseState = showcaseState,loginState = loginState,
+                        onRefreshShowcase = showcaseViewModel::refresh,
+                        onLogin = { email, password, navigate ->
+                            loginViewModel.login(email, password) { token ->
+                                showcaseViewModel.setAccessToken(token)
+                                showcaseViewModel.refresh()
+                                navigate()
+                            }
+                        },
+                        modifier = Modifier.padding(paddingValues = innerPadding
+                        )
 
                     )
                 }
